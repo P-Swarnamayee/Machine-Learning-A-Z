@@ -1,0 +1,42 @@
+Three steps:
+--------------
+  1. Data preprocessing: Import data --> clean data --> split into train and test sets
+  2. Data modelling: Build model --> train model --> make predictions
+  3. Model Evaluation: Calculate performance metrics --> Make a verdict
+
+Training and Testing Sets:
+Suppose you want to sell a car and want to predict the price of car
+Dependent variable --> price of car
+Independent variable --> mileage, age of car
+Total no.of cars you have in the dataset --> 20
+
+Spliting the data=> 20% of data separated as testing set
+                 => 80% of data separated as training set
+Training set --> used to build a model
+Then we take the cars from test set and apply our model to them and predict the value --> predicted value
+We also have actual value of car price that we know from training set --> actual value
+
+So, now we compare the predicted value with the actual value and we can estimate the accuracy of our model and check if our model needs any improvement
+
+Feature Scaling: (Always applied to columns)
+---------------------------------------------
+There are many techniques but we have 2 main ones
+  1. Normalization
+  2. Standatdization
+
+1. Normalization: We produce a new column by adjust the values in the column between [0,1]
+                  Formula:  X' = (X - Xmin)/(Xmax - Xmin)
+
+2. Standardization: It is same as normalization, but instead of subtracting the min from every value, 
+                    we subtract the average and divide by standard deviation and produce a new column whose 
+                    values are betweem [-3,+3]
+                  Formula:  X' = (X - Xavg)/(StandardDeviation)
+
+Suppose we have the following data:
+person    annual_salary    age    (After normalization)  person    annual_salary    age
+p1        $70000            45                              p1         1             1 
+p2        $60000            44                              p2         0.44          0.8
+p3        $52000            40                              p3         0             0
+
+Based on the normalized data, we can see that p2 is between p1 and p2 in terms of annual_salary,
+but he is closer to p1 in terms of age.
