@@ -1,0 +1,256 @@
+Steps:
+** 1. Importing libraries
+    Basic libraries --> numpy (to work with arrays)
+                        matplotlib (for visualization)
+                        pandas (to create matrices, dataframes and work with them)
+** 2. Importing dataset --> use pandas --> pd.read_csv("path")
+                        create 2 variables for: 
+                            x -- features(first columns)
+                            y -- dependent variable(last column)
+** 3. Taking care of missing data:
+    There are many ways to handle missing data
+    - Ignore the missing data by deleting the record if we have only 1% of data that is missing and that does not effect the model
+    - But if you have large amount of missing data, you need to handle it
+    - Replace the missing value in the column by the average/median/ most frequent value of the column in which there is missing data
+        For this you can use impute from scikitlearn library 
+        ----------------------------------------------------
+            from sklearn.impute import SimpleImputer
+            imputer = SimpleImputer(missing_values=np.nan, strategy='mean') //creating an instance of SimpleImputer
+            imputer.fit(X[:, 1:3]) //fit method connect the imputer with matrix of features and applies the imputer on them
+            // imputer.transform(X[:, 1:3]) -- transform method replaces the missing values with the specified strategy values-- creates new variable
+            X[:, 1:3] = imputer.transform(X[:, 1:3]) //transforms and updates in the same variable
+
+** 4. Encoding categorical data: To turn categorical data into number inorder to make the comparision easier
+    Encoding independent variable
+    -------------------------------
+      Method-1: OneHot Encoding -- Turing the values of a column into different columns. 
+                                 Converts each values into binary vectors
+                    2 classes are used:
+                      ===========================================
+                      from sklearn.compose import ColumnTransformer
+                      from sklearn.preprocessing import OneHotEncoder
+                      ct = ColumnTransformer(transformers=[(typeOfTransformation, whatEncoding(), [indexesOfCol])],remainder='passthrough')
+                      X = np.array(ct.fit_transform(X))  //feature variable that is categorical
+                      =============================================
+            Example:
+              Country    -----One hot encoding----->    Country
+              -------------------------------------------------------
+              Spain          1(Changes one column       1.0  0.0  0.0                                  
+              Germany           That has 3 different    0.0  0.0  1.0 
+              Spain              values into 3 cols     1.0  0.0  0.0
+              Germany            so we can identify     0.0  0.0  1.0
+              France                   uniquely         0.0  1.0  0.0
+              France                                    0.0  1.0  0.0 
+              Spain                                     1.0  0.0  0.0
+              France                                    0.0  1.0  0.0
+    
+    Encoding dependent variable
+    ------------------------------
+      Method: Label Encoder
+              =========================================================
+              from sklearn.preprocessing import LabelEncoder
+              le = LabelEncoder()
+              y = le.fit_transform(y)
+              ==========================================================
+          Example:
+          Purchased ----------Label Encoder--------->    Purchased
+            yes                                               1
+            no                                                0
+            no                                                0
+            yes                                               1
+            yes                                               1
+
+** 5. Splitting dataset into train and test sets: 
+    Train set: Train your ML model on existing observation
+    Test set: Evaluate the performance of your ML model on new observations (future data that you are gonna get/ on which you are going to deploy ur ML model)
+    Contains module called "modelselection" which has "train_test_split" which creates:
+                            a pair of "dep_var" and "ind_var" datasets for both train and test sets
+                    => we get 4 pairs of sets: X_train, X_test, y_train, y_test
+                    Splitsize recommended:
+                              test_size = 0.2 i.e 20%
+                              train_size = 0.8 i.e 80%
+                    random_state=1 => we get same size for train and test
+        =======================================================================
+        from sklearn.model_selection import train_test_split
+        X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2, random_state=1)
+        print(X_train)
+        print(X_test)
+        print(y_train)
+        print(y_test)
+
+** 6. Feature scaling:
+    Scaling all your variables/features to make sure all the values are in the same scale.
+    We do this to prevent one feature from dominating the other which therefore will be neglected by the ML model.
+    2 methods:
+    - Standardisation:   Xstand  =  (X - mean(X)) / (std(X))            -- works all the time
+    - Normalisation:     Xnorm   =  (X - min(x)) / (max(X) - min(X))    -- works when features are normally distributed
+    We apply feature scaling on the test and train sets separately.
+    You do not have to apply feature scaling on dummy variables.
+    scaler will be fitted only to X_train.
+    Later we will apply (transform) feature scaling to X_test.
+    ========================================================================
+    from sklearn.preprocessing import StandardScaler
+    scaler = StandardScaler()
+    X_train[:, 3:] = scaler.fit_transform(X_train[:, 3:])
+    X_test[:, 3:] = scaler.transform(X_test[:, 3:])
+    print(X_train)
+    print(X_test)
+    ========================================================================
+
+
+"WE APPLY FEATURE SCALING AFTER SPLITTING THE DATASET": Because,
+------------------------------------------------------------------
+The test set is the brand new set on which you are going to evaluate your ML model. 
+If we perform Feature scaling before splitting the dataset, it scales all the variables and gets the mean and std including for the test set.
+But the test set is something related to predictions and should not be manipulated before training your model as it disturbs testing accuracy and info leakage.
+
+Some important note: OOPS
+-------------------------
+1. Class: It is the model/ blueprint of something we want to build. Eg: house construction plan
+2. Object: It is an instance of the class. Eg: House is built by following the instructions of construction plan
+3. Method: It is a tool we can use on the object to complete a specific action. It takes some inputs that were defined in the class and returns an output
+            Eg: tool can be to open the main door of a house if a guest is coming.
+=======================================================================================================================================================================
+                                        LABS
+------------------------------
+Lab-1: 
+-----------------------------
+# Importing the necessary libraries
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split 
+
+# Loading the Iris dataset
+dataset = pd.read_csv("iris.csv")
+
+# Creating the matrix of features (X) and the dependent variable vector (y)
+X = dataset.iloc[:, :-1].values
+y = dataset.iloc[:, -1].values
+
+# Printing the matrix of features and the dependent variable vector
+print(X)
+print(y)
+==========================================
+Lab-2: Handling missing data
+==========================================
+# Importing the necessary libraries
+import pandas as pd
+import numpy as np
+from sklearn.impute import SimpleImputer
+
+# Load the dataset
+dataset = pd.read_csv("pima-indians-diabetes.csv")
+X = dataset.iloc[:, :-1].values
+y = dataset.iloc[:, -1].values
+
+# Identify missing data (assumes that missing data is represented as NaN)
+dataset.isnull()
+
+# Print the number of missing entries in each column
+print(dataset.isnull().sum(axis=0))
+
+# Configure an instance of the SimpleImputer class
+imputer = SimpleImputer(missing_values=np.NaN, strategy='mean')
+
+# Fit the imputer on the DataFrame
+imputer.fit(X[:, :])
+
+# Apply the transform to the DataFrame
+X[:, :] = imputer.transform(X[:, :])
+
+#Print your updated matrix of features
+print(X)
+
+===============================================================
+Lab-3: Encoding categorical data
+===============================================================
+# Importing the necessary libraries
+import pandas as pd
+import numpy as np
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import LabelEncoder
+
+# Load the dataset
+dataset = pd.read_csv("titanic.csv")
+
+# Identify the categorical data
+cat_data = ['Sex','Embarked','Pclass']
+
+# Implement an instance of the ColumnTransformer class
+ct = ColumnTransformer(transformers=[('encoder',OneHotEncoder(),cat_data)], remainder='passthrough')
+
+# Apply the fit_transform method on the instance of ColumnTransformer
+X = ct.fit_transform(dataset)
+
+# Convert the output into a NumPy array
+X = np.array(X)
+
+# Use LabelEncoder to encode binary categorical data
+le = LabelEncoder()
+y = le.fit_transform(dataset['Survived'])
+
+# Print the updated matrix of features and the dependent variable vector
+print(X)
+print(y)
+
+======================================================
+LAB-4: Splitting into train and test
+========================================================
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# Load the Iris dataset
+dataset = pd.read_csv("iris.csv")
+
+# Separate features and target
+X = dataset.drop('target',axis=1)
+y = dataset['target']
+
+# Split the dataset into an 80-20 training-test set
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+
+# Apply feature scaling on the training and test sets
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Print the scaled training and test sets
+print("Scaled Training Set:")
+print(X_train)
+print("\nScaled Test Set:")
+print(X_test)
+=======================================================================
+LAB-5: Feature Scaling
+=======================================================================
+# Import necessary libraries
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+
+# Load the Wine Quality Red dataset
+dataset = pd.read_csv("winequality-red.csv",delimiter=';')
+
+# Separate features and target
+X = dataset.drop('quality',axis=1)
+y = dataset['quality']
+
+# Split the dataset into an 80-20 training-test set
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+
+# Create an instance of the StandardScaler class
+scaler = StandardScaler()
+
+# Fit the StandardScaler on the features from the training set and transform it
+X_train = scaler.fit_transform(X_train)
+
+# Apply the transform to the test set
+X_test = scaler.transform(X_test)
+
+# Print the scaled training and test datasets
+print(X_train)
+print(X_test)
+
