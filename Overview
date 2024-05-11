@@ -1,0 +1,10 @@
+Steps:
+1. Import libraries
+2. Import dataset
+3. Plot the dataset
+4. Feature Scaling
+5. Training the model on previous campaign
+6. Visualize the model results
+7. Importing new project data
+8. Applying our data to new project
+9. Visualize the predictions
