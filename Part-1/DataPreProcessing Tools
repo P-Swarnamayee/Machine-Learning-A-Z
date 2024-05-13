@@ -110,6 +110,11 @@ Some important note: OOPS
 2. Object: It is an instance of the class. Eg: House is built by following the instructions of construction plan
 3. Method: It is a tool we can use on the object to complete a specific action. It takes some inputs that were defined in the class and returns an output
             Eg: tool can be to open the main door of a house if a guest is coming.
+
+*** Euclidean distance between 2 points:
+P1(x1,y1) and P2(x2,y2) is: sqrt((x2-x1)^2 + (y2-y1)^2)
+
+
 =======================================================================================================================================================================
                                         LABS
 ------------------------------
